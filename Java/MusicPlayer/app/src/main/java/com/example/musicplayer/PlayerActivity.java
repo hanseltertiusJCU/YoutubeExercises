@@ -169,6 +169,9 @@ public class PlayerActivity extends AppCompatActivity {
     private void setSongTextLabel(){
 
         sName = mySongs.get(position).getName();
+        if(sName.indexOf(".") > 0){
+            sName = sName.substring(0, sName.lastIndexOf("."));
+        }
         songTextLabel.setText(sName);
 
     }
