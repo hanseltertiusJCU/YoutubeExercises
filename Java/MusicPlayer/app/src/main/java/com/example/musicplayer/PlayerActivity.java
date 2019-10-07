@@ -29,7 +29,6 @@ public class PlayerActivity extends AppCompatActivity {
     int position;
     String sName;
 
-    // todo: array list type
     ArrayList<File> mySongs;
     Thread updateSeekBar;
 
@@ -67,37 +66,21 @@ public class PlayerActivity extends AppCompatActivity {
             }
         };
 
-        if(myMediaPlayer != null){
-            myMediaPlayer.stop();
-            myMediaPlayer.release();
-        }
+        stopMediaPlayerObject();
 
         Intent i = getIntent();
         Bundle bundle = i.getExtras();
 
         mySongs = (ArrayList) bundle.getParcelableArrayList("songFiles");
 
-        sName = mySongs.get(position).getName();
-
-        String songName = i.getStringExtra("songName");
-
-        songTextLabel.setText(songName);
-        songTextLabel.setSelected(true);
-
         position = bundle.getInt("pos", 0);
 
-        Uri uri = Uri.parse(mySongs.get(position).toString());
+        setSongTextLabel();
+        songTextLabel.setSelected(true);
 
-        myMediaPlayer = MediaPlayer.create(getApplicationContext(), uri);
-        myMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                myMediaPlayer.start();
-            }
-        });
+        createMediaPlayerObject();
 
-        myMediaPlayer.start();
-        songSeekBar.setMax(myMediaPlayer.getDuration());
+        startMediaPlayerObject();
         updateSeekBar.start();
 
         songSeekBar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.MULTIPLY);
@@ -106,6 +89,7 @@ public class PlayerActivity extends AppCompatActivity {
         songSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
             }
 
             @Override
@@ -122,26 +106,15 @@ public class PlayerActivity extends AppCompatActivity {
         btnPrevious.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                myMediaPlayer.stop();
-                myMediaPlayer.release();
+                stopMediaPlayerObject();
 
                 position = ((position -1) < 0) ? (mySongs.size() - 1) : (position -1);
 
-                Uri uri = Uri.parse(mySongs.get(position).toString());
+                createMediaPlayerObject();
 
-                myMediaPlayer = MediaPlayer.create(getApplicationContext(), uri);
-                myMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mp) {
-                        myMediaPlayer.start();
-                    }
-                });
+                setSongTextLabel();
 
-                sName = mySongs.get(position).getName();
-                songTextLabel.setText(sName);
-
-                myMediaPlayer.start();
-                songSeekBar.setMax(myMediaPlayer.getDuration());
+                startMediaPlayerObject();
 
             }
         });
@@ -165,26 +138,15 @@ public class PlayerActivity extends AppCompatActivity {
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                myMediaPlayer.stop();
-                myMediaPlayer.release();
+                stopMediaPlayerObject();
 
                 position = ((position+1) % mySongs.size());
 
-                Uri uri = Uri.parse(mySongs.get(position).toString());
+                createMediaPlayerObject();
 
-                myMediaPlayer = MediaPlayer.create(getApplicationContext(), uri);
-                myMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mp) {
-                        myMediaPlayer.start();
-                    }
-                });
+                setSongTextLabel();
 
-                sName = mySongs.get(position).getName();
-                songTextLabel.setText(sName);
-
-                myMediaPlayer.start();
-                songSeekBar.setMax(myMediaPlayer.getDuration());
+                startMediaPlayerObject();
             }
         });
 
@@ -192,10 +154,35 @@ public class PlayerActivity extends AppCompatActivity {
 
     private void createMediaPlayerObject(){
 
+        Uri uri = Uri.parse(mySongs.get(position).toString());
+
+        myMediaPlayer = MediaPlayer.create(getApplicationContext(), uri);
+        myMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                myMediaPlayer.start();
+            }
+        });
+
     }
 
     private void setSongTextLabel(){
 
+        sName = mySongs.get(position).getName();
+        songTextLabel.setText(sName);
+
+    }
+
+    private void stopMediaPlayerObject(){
+        if(myMediaPlayer != null){
+            myMediaPlayer.stop();
+            myMediaPlayer.release();
+        }
+    }
+
+    private void startMediaPlayerObject(){
+        myMediaPlayer.start();
+        songSeekBar.setMax(myMediaPlayer.getDuration());
     }
 
 

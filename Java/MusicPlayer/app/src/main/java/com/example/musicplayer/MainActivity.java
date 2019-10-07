@@ -78,11 +78,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                String songName = mySongsList.getItemAtPosition(position).toString();
-
                 startActivity(new Intent(getApplicationContext(), PlayerActivity.class)
                 .putExtra("songFiles", songFiles)
-                .putExtra("songName", songName)
                 .putExtra("pos", position));
             }
         });
@@ -91,7 +88,6 @@ public class MainActivity extends AppCompatActivity {
     public void getMusic(){
         ContentResolver contentResolver = getContentResolver();
         Uri songUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-        Log.d("songUri", songUri.getPath());
         Cursor songCursor = contentResolver.query(songUri,  null, null, null, null);
 
         if(songCursor != null && songCursor.moveToFirst()){
@@ -100,15 +96,13 @@ public class MainActivity extends AppCompatActivity {
             int data = songCursor.getColumnIndex(MediaStore.Audio.Media.DATA);
 
             do {
+                String currentTitle = songCursor.getString(songTitle);
                 String currentSongFilePath = songCursor.getString(data);
                 File currentSongFile = new File(currentSongFilePath);
-                songFiles.add(currentSongFile);
-
-                String currentTitle = songCursor.getString(songTitle);
-                arrayList.add(currentTitle);
-
-                Log.d("songUriItem", songCursor.getString(data));
-
+                if(currentSongFile.getName().endsWith(".mp3") || currentSongFile.getName().endsWith(".wav")) {
+                    songFiles.add(currentSongFile);
+                    arrayList.add(currentTitle);
+                }
 
             } while (songCursor.moveToNext());
         }
