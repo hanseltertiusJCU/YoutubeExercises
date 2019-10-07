@@ -89,6 +89,12 @@ public class PlayerActivity extends AppCompatActivity {
         Uri uri = Uri.parse(mySongs.get(position).toString());
 
         myMediaPlayer = MediaPlayer.create(getApplicationContext(), uri);
+        myMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                myMediaPlayer.start();
+            }
+        });
 
         myMediaPlayer.start();
         songSeekBar.setMax(myMediaPlayer.getDuration());
@@ -124,6 +130,12 @@ public class PlayerActivity extends AppCompatActivity {
                 Uri uri = Uri.parse(mySongs.get(position).toString());
 
                 myMediaPlayer = MediaPlayer.create(getApplicationContext(), uri);
+                myMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        myMediaPlayer.start();
+                    }
+                });
 
                 sName = mySongs.get(position).getName();
                 songTextLabel.setText(sName);
@@ -161,6 +173,12 @@ public class PlayerActivity extends AppCompatActivity {
                 Uri uri = Uri.parse(mySongs.get(position).toString());
 
                 myMediaPlayer = MediaPlayer.create(getApplicationContext(), uri);
+                myMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        myMediaPlayer.start();
+                    }
+                });
 
                 sName = mySongs.get(position).getName();
                 songTextLabel.setText(sName);
@@ -169,6 +187,14 @@ public class PlayerActivity extends AppCompatActivity {
                 songSeekBar.setMax(myMediaPlayer.getDuration());
             }
         });
+
+    }
+
+    private void createMediaPlayerObject(){
+
+    }
+
+    private void setSongTextLabel(){
 
     }
 
