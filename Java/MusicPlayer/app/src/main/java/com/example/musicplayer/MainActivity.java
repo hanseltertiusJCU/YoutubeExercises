@@ -8,6 +8,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -30,15 +32,17 @@ import com.karumi.dexter.listener.single.PermissionListener;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
     ListView mySongsList;
-    String[] items;
 
     private static final int MY_PERMISSION_REQUEST = 1;
 
     ArrayList<String> arrayList;
+
+    ArrayList<File> songFiles;
 
     ArrayAdapter<String> adapter;
 
@@ -67,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
     public void doStuff(){
         mySongsList = (ListView) findViewById(R.id.mySongListView);
         arrayList = new ArrayList<>();
+        songFiles = new ArrayList<>();
         getMusic();
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, arrayList);
         mySongsList.setAdapter(adapter);
@@ -74,7 +79,13 @@ public class MainActivity extends AppCompatActivity {
         mySongsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // todo : open music player to play desired song
+
+                String songName = mySongsList.getItemAtPosition(position).toString();
+
+                startActivity(new Intent(getApplicationContext(), PlayerActivity.class)
+                .putExtra("songFiles", songFiles)
+                .putExtra("songName", songName)
+                .putExtra("pos", position));
             }
         });
     }
@@ -82,13 +93,25 @@ public class MainActivity extends AppCompatActivity {
     public void getMusic(){
         ContentResolver contentResolver = getContentResolver();
         Uri songUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        Log.d("songUri", songUri.getPath());
         Cursor songCursor = contentResolver.query(songUri,  null, null, null, null);
 
         if(songCursor != null && songCursor.moveToFirst()){
+
             int songTitle = songCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
+            int data = songCursor.getColumnIndex(MediaStore.Audio.Media.DATA);
+
             do {
+                String currentSongFilePath = songCursor.getString(data);
+                File currentSongFile = new File(currentSongFilePath);
+                songFiles.add(currentSongFile);
+
                 String currentTitle = songCursor.getString(songTitle);
                 arrayList.add(currentTitle);
+
+                Log.d("songUriItem", songCursor.getString(data));
+
+
             } while (songCursor.moveToNext());
         }
     }
